@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "JetBrainsMono";
+  src: url("JetBrainsMono-Regular.woff2") format("woff2");
+}
+
 * {
     box-sizing: border-box;
 }
@@ -5,6 +10,9 @@
 body,
 html {
     margin: 0;
+    font-family: "JetBrainsMono", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #4c566a;
+    color: #81a1c1;
 }
 
 .container {
@@ -16,6 +24,7 @@ html {
     grid-row: 1;
     display: grid;
     grid-template-columns: repeat(4, minmax(auto, 1fr));
+    margin-bottom: 100px;
 }
 
 .player-one {
@@ -50,19 +59,19 @@ html {
     justify-content: center;
     align-items: center;
     font-size: 4rem;
-    border: 2px solid black;
+    border: 2px solid #3b4252;
     border-radius: 15px;
 }
 
 .winner-declaration {
     position: fixed;
-    top: 50%;
+    top: 10%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 20px;
     border-radius: 10px;
-    font-size: 2rem;
+    font-size: 1.5rem;
     z-index: 1000;
 }
