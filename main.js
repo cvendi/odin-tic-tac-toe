@@ -34,9 +34,20 @@ const gameBoard = (() => {
 
 const gameController = (() => {
 
-    const playerMove = (index, player) => {
-        console.log(`${player.name} is attempting to place ${player.marker} at index ${index}`);
-        if (gameBoard.setCell(index, player.marker)) {
+    const players = [];
+    let currentPlayerIndex = 0;
+
+    const addPlayer = (player) => {
+        players.push(player);
+        console.log(`Player ${player.name} added.`);
+    };
+
+    const getCurrentPlayer = () => players[currentPlayerIndex];
+
+    const playerMove = (index) => {
+        if (gameBoard.setCell(index, players[currentPlayerIndex].marker)) {
+
+            console.log(`Board after ${players[currentPlayerIndex].name}'s move:`, gameBoard.getBoard());
 
             const checkWin = () => {
                 const board = gameBoard.getBoard();
@@ -49,27 +60,38 @@ const gameController = (() => {
                  // If every index in any win condition contains the player's marker,
                  // Player wins the game
                 return winConditions.some(condition => 
-                    condition.every(index => board[index] === player.marker)
+                    condition.every(index => board[index] === players[currentPlayerIndex].marker)
                 );
             };
 
             if (checkWin()) {
-                player.incrementScore();
-                console.log(`${player.name} wins!`);
+                console.log('Win detected!');
+                players[currentPlayerIndex].incrementScore();
+                console.log(`${players[currentPlayerIndex].name} wins!`);
+
                 gameBoard.resetBoard();
-            };
+                displayController.resetBoard();
+                displayController.declareWinner(players[currentPlayerIndex]);
+
+                return true;
+            }
+
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
             return true;
         }
         return false;
     };
 
-    return { playerMove };
+    return { playerMove, addPlayer, getCurrentPlayer };
 })();
 
 const displayController = (() => {
 
     const player1 = createPlayer('Alice', 'X');
     const player2 = createPlayer('Bob', 'O');
+
+    gameController.addPlayer(player1);
+    gameController.addPlayer(player2);
 
     const updatePlayerInfo = () => {
 
@@ -118,8 +140,7 @@ const displayController = (() => {
         playerTwoDiv.appendChild(playerTwoMarker);
     };
 
-    const createGameBoard = () => {
-        const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+    const updateGameBoard = (player) => {
         let size = 3 * 3;
 
         for (let i = 0; i < size; i++) {
@@ -132,28 +153,39 @@ const displayController = (() => {
 
             square.style.width = '200px';
             square.style.height = '200px';
-            square.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+            square.addEventListener('click', () => {
+                const container = document.querySelector('#container');
+                const winnerDeclaration = document.querySelector('.winner-declaration');
+                if (winnerDeclaration) {
+                    container.removeChild(winnerDeclaration);
+                };
+                square.textContent = gameController.getCurrentPlayer().marker;
+                gameController.playerMove(i);
+            });
+
             gameBoardDiv.appendChild(square);
         };
     }
 
-    const updateGameBoard = () => {
+    const resetBoard = () => {
         const gameBoardDiv = document.querySelector('#game-board');
-    }
-
-    const simulateGameplay = () => {
-        gameController.playerMove(0, player1);
-        gameController.playerMove(1, player2);
-        gameController.playerMove(3, player1);
-        gameController.playerMove(5, player2);
-        gameController.playerMove(6, player1);
-
+        while (gameBoardDiv.firstChild) {
+            gameBoardDiv.removeChild(gameBoardDiv.firstChild);
+        }
         updateGameBoard();
     };
 
-    return { updatePlayerInfo, simulateGameplay, createGameBoard };
+    const declareWinner = (player) => {
+        const container = document.querySelector('#container');
+        const winnerDiv = document.createElement('div');
+        winnerDiv.classList.add('winner-declaration');
+        winnerDiv.textContent = `${player.name} wins!`;
+        container.appendChild(winnerDiv);
+    };
+
+    return { updatePlayerInfo, updateGameBoard, resetBoard, declareWinner };
 })();
 
-displayController.createGameBoard();
-displayController.simulateGameplay();
+displayController.updateGameBoard();
 displayController.updatePlayerInfo();

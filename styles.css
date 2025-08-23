@@ -36,8 +36,33 @@ html {
     display: flex;
     justify-content: center;
 }
+
 .game-board {
     display: grid;
     grid-template-columns: 200px 200px 200px;
     grid-template-rows: 200px 200px 200px;
+    border-radius: 25px;
+    gap: 10px;
+}
+
+.board-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    border: 2px solid black;
+    border-radius: 15px;
+}
+
+.winner-declaration {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 2rem;
+    z-index: 1000;
 }
