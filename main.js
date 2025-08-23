@@ -73,43 +73,73 @@ const displayController = (() => {
 
     const updatePlayerInfo = () => {
 
-        const container = document.querySelector("container");
         const playerInfo = document.querySelector("#player-info");
 
         // Player one info card content
         const playerOneDiv = document.createElement('div');
-        playerOneDiv.classList.add(player1.name.toLowerCase());
-        playerOneDiv.textContent = `Name: ${player1.name}`;
+        playerOneDiv.classList.add('player-one');
 
-        const playerOneScore = document.createElement('div');
-        playerOneScore.classList.add(`${player1.name.toLowerCase()}-score`);
+        const playerOneName = document.createElement('p');
+        playerOneName.classList.add('player-one-name')
+        playerOneName.textContent = `Name: ${player1.name}`;
+
+        const playerOneScore = document.createElement('p');
+        playerOneScore.classList.add('player-one-score');
         playerOneScore.textContent = `Score: ${player1.getScore()}`;
 
-        const playerOneMarker = document.createElement('div');
-        playerOneMarker.classList.add(`${player1.name.toLowerCase()}-marker`);
+        const playerOneMarker = document.createElement('p');
+        playerOneMarker.classList.add(`player-one-marker`);
         playerOneMarker.textContent = `Marker: ${player1.marker}`;
 
         playerInfo.appendChild(playerOneDiv);
+        playerOneDiv.appendChild(playerOneName);
         playerOneDiv.appendChild(playerOneScore);
         playerOneDiv.appendChild(playerOneMarker);
 
         // Player two info card content
         const playerTwoDiv = document.createElement('div');
-        playerTwoDiv.classList.add(player2.name.toLowerCase());
-        playerTwoDiv.textContent = `Name: ${player2.name}`;
+        playerTwoDiv.classList.add('player-two');
 
-        const playerTwoScore = document.createElement('div');
-        playerTwoScore.classList.add(`${player2.name.toLowerCase()}-score`);
+        const playerTwoName = document.createElement('p');
+        playerTwoName.classList.add('player-two-name');
+        playerTwoName.textContent = `Name: ${player2.name}`;
+
+        const playerTwoScore = document.createElement('p');
+        playerTwoScore.classList.add(`player-two-score`);
         playerTwoScore.textContent = `Score: ${player2.getScore()}`;
 
-        const playerTwoMarker = document.createElement('div');
-        playerTwoMarker.classList.add(`${player2.name.toLowerCase()}-marker`);
+        const playerTwoMarker = document.createElement('p');
+        playerTwoMarker.classList.add(`player-two-marker`);
         playerTwoMarker.textContent = `Marker: ${player2.marker}`;
 
         playerInfo.appendChild(playerTwoDiv);
+        playerTwoDiv.appendChild(playerTwoName);
         playerTwoDiv.appendChild(playerTwoScore);
         playerTwoDiv.appendChild(playerTwoMarker);
     };
+
+    const createGameBoard = () => {
+        const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+        let size = 3 * 3;
+
+        for (let i = 0; i < size; i++) {
+            const gameBoardDiv = document.querySelector('#game-board');
+            const square = document.createElement('div');
+
+            gameBoardDiv.style.width = '600px';
+            gameBoardDiv.style.height = '600px';
+            square.classList.add('board-cell');
+
+            square.style.width = '200px';
+            square.style.height = '200px';
+            square.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            gameBoardDiv.appendChild(square);
+        };
+    }
+
+    const updateGameBoard = () => {
+        const gameBoardDiv = document.querySelector('#game-board');
+    }
 
     const simulateGameplay = () => {
         gameController.playerMove(0, player1);
@@ -117,10 +147,13 @@ const displayController = (() => {
         gameController.playerMove(3, player1);
         gameController.playerMove(5, player2);
         gameController.playerMove(6, player1);
+
+        updateGameBoard();
     };
 
-    return { updatePlayerInfo, simulateGameplay };
+    return { updatePlayerInfo, simulateGameplay, createGameBoard };
 })();
 
+displayController.createGameBoard();
 displayController.simulateGameplay();
 displayController.updatePlayerInfo();
