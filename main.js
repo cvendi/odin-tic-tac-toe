@@ -18,9 +18,12 @@ const gameBoard = (() => {
     const setCell = (index, marker) => {
         if (index >= 0 && index < 9 && !board[index]) {
             board[index] = marker;
+            console.log(board[index])
             return true;
+        } else {
+            displayController.invalidMoveNotification(index);
+            return false;
         }
-        return false; // Move was invalid or cell already occupied
     };
 
     const resetBoard = () => {
@@ -65,7 +68,6 @@ const gameController = (() => {
             };
 
             if (checkWin()) {
-                console.log('Win detected!');
                 players[currentPlayerIndex].incrementScore();
                 console.log(`${players[currentPlayerIndex].name} wins!`);
 
@@ -82,10 +84,16 @@ const gameController = (() => {
         return false;
     };
 
+
     return { playerMove, addPlayer, getCurrentPlayer };
 })();
 
 const displayController = (() => {
+
+    /* const playerOneNameInput = document.querySelector('#player-one-name-input');
+    const playerOneName = playerOneNameInput.textContent()
+    const playerTwoNameInput = document.querySelector('#player-two-name-input');
+    const playerTwoName = playerTwoNameInput.textContent() */
 
     const player1 = createPlayer('Alice', 'X');
     const player2 = createPlayer('Bob', 'O');
@@ -95,60 +103,34 @@ const displayController = (() => {
 
     const updatePlayerInfo = () => {
 
-        const playerInfo = document.querySelector("#player-info");
-
         // Player one info card content
-        const playerOneDiv = document.createElement('div');
-        playerOneDiv.classList.add('player-one');
+        const playerOneDiv = document.querySelector('#player-one');
+        const playerOneNameLabel = document.querySelector('#player-one-name');
+        const playerOneScore = document.querySelector('#player-one-score');
+        const playerOneMarker = document.querySelector('#player-one-marker');
 
-        const playerOneName = document.createElement('p');
-        playerOneName.classList.add('player-one-name')
-        playerOneName.textContent = `Name: ${player1.name}`;
-
-        const playerOneScore = document.createElement('p');
-        playerOneScore.classList.add('player-one-score');
+        playerOneNameLabel.textContent = `Name: ${player1.name}`;
         playerOneScore.textContent = `Score: ${player1.getScore()}`;
-
-        const playerOneMarker = document.createElement('p');
-        playerOneMarker.classList.add(`player-one-marker`);
         playerOneMarker.textContent = `Marker: ${player1.marker}`;
 
-        playerInfo.appendChild(playerOneDiv);
-        playerOneDiv.appendChild(playerOneName);
-        playerOneDiv.appendChild(playerOneScore);
-        playerOneDiv.appendChild(playerOneMarker);
-
         // Player two info card content
-        const playerTwoDiv = document.createElement('div');
-        playerTwoDiv.classList.add('player-two');
+        const playerTwoDiv = document.querySelector('#player-two');
+        const playerTwoNameLabel = document.querySelector('#player-two-name');
+        const playerTwoScore = document.querySelector('#player-two-score');
+        const playerTwoMarker = document.querySelector('#player-two-marker');
 
-        const playerTwoName = document.createElement('p');
-        playerTwoName.classList.add('player-two-name');
-        playerTwoName.textContent = `Name: ${player2.name}`;
-
-        const playerTwoScore = document.createElement('p');
-        playerTwoScore.classList.add(`player-two-score`);
+        playerTwoNameLabel.textContent = `Name: ${player2.name}`;
         playerTwoScore.textContent = `Score: ${player2.getScore()}`;
-
-        const playerTwoMarker = document.createElement('p');
-        playerTwoMarker.classList.add(`player-two-marker`);
         playerTwoMarker.textContent = `Marker: ${player2.marker}`;
-
-        playerInfo.appendChild(playerTwoDiv);
-        playerTwoDiv.appendChild(playerTwoName);
-        playerTwoDiv.appendChild(playerTwoScore);
-        playerTwoDiv.appendChild(playerTwoMarker);
     };
 
-    const updateGameBoard = (player) => {
+    const renderGameBoard = (player) => {
         let size = 3 * 3;
 
         for (let i = 0; i < size; i++) {
             const gameBoardDiv = document.querySelector('#game-board');
             const square = document.createElement('div');
 
-            gameBoardDiv.style.width = '600px';
-            gameBoardDiv.style.height = '600px';
             square.classList.add('board-cell');
 
             square.style.width = '200px';
@@ -160,8 +142,11 @@ const displayController = (() => {
                 if (winnerDeclaration) {
                     container.removeChild(winnerDeclaration);
                 };
-                square.textContent = gameController.getCurrentPlayer().marker;
-                gameController.playerMove(i);
+                if (gameController.playerMove(i)) {
+                    square.textContent = gameController.getCurrentPlayer().marker;
+                } else {
+                    console.log('Invalid move detected.');
+                };
             });
 
             gameBoardDiv.appendChild(square);
@@ -173,7 +158,7 @@ const displayController = (() => {
         while (gameBoardDiv.firstChild) {
             gameBoardDiv.removeChild(gameBoardDiv.firstChild);
         }
-        updateGameBoard();
+        renderGameBoard();
     };
 
     const declareWinner = (player) => {
@@ -184,8 +169,16 @@ const displayController = (() => {
         container.appendChild(winnerDiv);
     };
 
-    return { updatePlayerInfo, updateGameBoard, resetBoard, declareWinner };
+    const invalidMoveNotification = (index) => {
+        console.log(`${index} is already occupied!`);
+    }
+
+    const init = () => {
+        displayController.renderGameBoard();
+        displayController.updatePlayerInfo();
+    };
+
+    return { updatePlayerInfo, renderGameBoard, resetBoard, declareWinner, invalidMoveNotification, init };
 })();
 
-displayController.updateGameBoard();
-displayController.updatePlayerInfo();
+displayController.init();
